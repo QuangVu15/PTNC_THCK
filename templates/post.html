@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Post - {{ post.title }}{% endblock %}
+
+{% block content %}
+    <div class="post">
+        <h1>{{ post.title }}</h1>
+        <p>{{ post.content }}</p>
+        <p>Author: {{ post.author.username }}</p>
+
+        <!-- Like/Unlike button -->
+        <form action="{{ url_for('like_post', post_id=post.id) }}" method="post">
+            {% if current_user in post.likes %}
+                <button type="submit" class="btn btn-secondary">Unlike</button>
+            {% else %}
+                <button type="submit" class="btn btn-primary">Like</button>
+            {% endif %}
+        </form>
+
+        <hr>
+
+        <!-- Comments Section -->
+        <h3>Comments</h3>
+        {% for comment in post.comments %}
+            <div class="comment">
+                <strong>{{ comment.author.username }}:</strong> {{ comment.content }}
+            </div>
+        {% endfor %}
+
+        <!-- Add a new comment -->
+        <form method="POST" action="{{ url_for('comment_post', post_id=post.id) }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.content.label }}<br>
+                {{ form.content(class="form-control") }}
+                {% for error in form.content.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+{% endblock %}
